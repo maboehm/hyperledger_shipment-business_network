@@ -1,0 +1,78 @@
+rule insurance {
+  description: "The Insurer can only READ transactions that are related to it"
+  participant(i): "org.kit.blockchain.Insurer"
+  operation: READ
+  resource(s): "org.kit.blockchain.Shipment"
+  condition: (s.insurer == i)
+  action: ALLOW
+}
+
+rule devices {
+  description: "The Devices can only UPDATE shipments that are related to it"
+  participant(d): "org.kit.blockchain.Device"
+  operation: UPDATE
+  resource(s): "org.kit.blockchain.Shipment"
+  transaction(tx): "org.kit.blockchain.ShipmentException"
+  condition: (s.device == d)
+  action: ALLOW
+}
+
+rule dispatcherSP {
+  description: "Dispatchers can CREATE and READ new Shipments."
+  participant:"org.kit.blockchain.Dispatcher"
+  operation: CREATE, READ
+  resource: "org.kit.blockchain.Shipment"
+  action: ALLOW
+}
+
+rule dispatcherCT {
+  description:"Dispatchers can only READ contracts."
+  participant:"org.kit.blockchain.Dispatcher"
+  operation: READ
+  resource: "org.kit.blockchain.Contract"
+  action: ALLOW
+}
+
+rule recipients {
+  description: "Recipients can UPDATE and READ shipments."
+  participant: "org.kit.blockchain.Recipient"
+  operation: UPDATE, READ
+  resource: "org.kit.blockchain.Shipment"
+  action: ALLOW
+}
+
+rule shippers {
+  description: "Shippers can UPDATE and READ shipments."
+  participant: "org.kit.blockchain.Shipper"
+  operation: UPDATE, READ
+  resource: "org.kit.blockchain.Shipment"
+  action: ALLOW
+}
+
+/**
+ * Sample access control list.
+ */
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}

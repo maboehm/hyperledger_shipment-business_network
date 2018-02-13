@@ -1,0 +1,171 @@
+/**
+ * Write your model definitions here
+ */
+
+namespace org.kit.blockchain
+/**
+  * A business network for shipping sensitive goods
+  * The cargo is sensor-controlled.
+  */
+
+/**
+ * The status of a shipment
+ */
+enum ShipmentStatus {
+  o CREATED
+  o IN_TRANSIT
+  o RELEASED
+  o ARRIVED
+}
+
+/**
+ * An abstract transaction that is related to a Shipment
+ */
+abstract transaction ShipmentTransaction {
+    --> Shipment shipment
+}
+
+/**
+ * An Exception occurs when the predefined threshold of accelerometer 
+ * values is exceeded. Every Exception contains the message from the NodeRED-Application
+ * and the GPS Values
+ */
+ 
+transaction ShipmentException extends ShipmentTransaction {
+ o String message
+ o Double gpsLat
+ o Double gpsLong
+}
+
+/**
+ * A notification that a shipment has been received by the
+ * recipient.
+ */
+
+transaction ShipmentReceived extends ShipmentTransaction {
+}
+
+/**
+* Transactions for when the Shipment is transferred between two shippers.
+* The first shipper has to release a shipment so that the new shipper can overtake it.
+*/
+
+transaction ShipmentRelease extends ShipmentTransaction{
+  --> Shipper shipper_old
+  --> Shipper shipper_new
+}
+
+/**
+ * The new shipper overtakes the shipment
+ */
+
+transaction ShipmentOvertake extends ShipmentTransaction{
+  --> Shipper shipper_old
+  --> Shipper shipper_new
+}
+/**
+ * A shipment being tracked as an asset on the ledger
+ */
+
+asset Shipment identified by shipmentId {
+  o String shipmentId
+  o ShipmentStatus status
+  o ShipmentException[] shipmentExceptions optional
+  --> Contract contract
+  --> Insurer insurer
+  --> Device device
+}
+
+/**
+ * Defines a contract between a Dispatcher and a Recipient to ship using
+ * at least one Shipper. All parties agree on a specific arrival Date.
+ */
+
+asset Contract identified by contractId {
+  o String contractId
+  --> Dispatcher dispatcher
+  --> Shipper[] shippers
+  --> Recipient recipient
+  o DateTime arrivalDateTime
+  }
+
+/**
+ * A concept for a simple street address
+ */
+
+concept Address {
+  o String city optional
+  o String country
+  o String street optional
+  o String zip optional
+}
+
+/**
+ * An abstract participant type in this business network
+ */
+
+abstract participant Business identified by email {
+  o String email
+  o Address address
+}
+
+/**
+ * A Dispatcher is a type of participant in the network
+ */
+participant Dispatcher extends Business {
+}
+
+/**
+ * A Shipper is a type of participant in the network
+ */
+participant Shipper extends Business {
+}
+
+/**
+ * A Recipient is a type of participant in the network
+ */
+participant Recipient extends Business {
+}
+
+/**
+ * An Insurer is a type of participant in the network
+ */
+participant Insurer extends Business {
+}
+
+/**
+ * A Device is a type of participant in the network
+ */
+participant Device extends Business {
+}
+
+/*****************************
+ *****************************
+ *******EVENTS ***************
+ *****************************
+*/
+
+event ShipmentExceptionEvent {
+ o String message
+ o String shipmentId
+ o Double gpsLat
+ o Double gpsLong
+}
+
+event ShipmentReleaseEvent {
+ o Shipper shipper_old
+ o Shipper shipper_new
+ o String shipmentId
+}
+
+event ShipmentOvertakeEvent {
+ --> Shipper shipper_old
+ --> Shipper shipper_new
+ o String shipmentId
+}
+
+/**
+ * Just for initializing a demo
+ */
+transaction SetupDemo {
+}

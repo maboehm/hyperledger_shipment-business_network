@@ -1,0 +1,22 @@
+{
+    "name": "kit-blockchain",
+    "version": "0.1",
+    "description": "Seminar",
+    "scripts": {
+        "test": "mocha --recursive"
+    },
+    "author": "Wir",
+    "email": "wir@mail.de",
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "composer-admin": "latest",
+        "composer-client": "latest",
+        "composer-common": "latest",
+        "composer-connector-embedded": "latest",
+        "chai": "latest",
+        "eslint": "latest",
+        "istanbul": "latest",
+        "mkdirp": "latest",
+        "mocha": "latest"
+    }
+}
